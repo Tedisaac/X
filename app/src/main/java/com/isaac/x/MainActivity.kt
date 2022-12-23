@@ -9,19 +9,62 @@ import android.provider.CallLog
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.isaac.x.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
 
     private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
 
+    private val numbers = ArrayList<String>()
+
+    private val mainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(mainBinding.root)
 
         supportActionBar?.hide()
 
-        deleteCallLogByNumber("0705591639")
+        setClickListeners()
+
+        for (num in numbers){
+
+            Log.e(TAG, "onCreate: $num", )
+            
+            //deleteCallLogByNumber(num)
+        }
+
+
+    }
+
+    private fun setClickListeners() {
+        mainBinding.btnAdd.setOnClickListener { addNumber() }
+        mainBinding.btnRemove.setOnClickListener { removeNumber() }
+    }
+
+    private fun removeNumber() {
+        if (mainBinding.edNumber.text.isNotEmpty()){
+            for (num in numbers){
+                if (mainBinding.edNumber.text.toString().equals(num)){
+                    numbers.remove(num)
+
+                    mainBinding.edNumber.text.clear()
+
+                    Log.e(TAG, "removeNumber: ${numbers.size}", )
+                }
+            }
+        }
+    }
+
+    private fun addNumber() {
+        if (mainBinding.edNumber.text.isNotEmpty()){
+            numbers.add(mainBinding.edNumber.text.toString())
+
+            mainBinding.edNumber.text.clear()
+
+            Log.e(TAG, "addNumber: ${numbers.size}", )
+        }
     }
 
     private fun deleteCallLogByNumber(numberTag: String) {
@@ -40,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             val queryString = CallLog.Calls.NUMBER + " LIKE '" + n + "'"
             try {
                 this.contentResolver.delete(CallLog.Calls.CONTENT_URI, queryString, null)
-                finish()
+                //finish()
             }catch (e: Exception){
                 Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "deleteCallLogByNumber: ${e.message}")
@@ -59,7 +102,9 @@ class MainActivity : AppCompatActivity() {
                     Log.i(TAG, "Permission has been denied by user")
                 } else {
                     Log.i(TAG, "Permission has been granted by user")
-                    deleteCallLogByNumber("0705591639")
+                    for (num in numbers){
+                        deleteCallLogByNumber(num)
+                    }
                 }
             }
         }
