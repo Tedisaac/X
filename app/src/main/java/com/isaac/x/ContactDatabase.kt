@@ -13,16 +13,30 @@ abstract class ContactDatabase : RoomDatabase() {
     abstract fun contactDao() : ContactDao
 
     companion object{
-        @Volatile private var instance: ContactDatabase? = null
-        private val LOCK = Any()
+        @Volatile
+        private var INSTANCE: ContactDatabase? = null
 
-        operator fun invoke(context: Context) = instance ?: synchronized(LOCK){
-            instance ?: buildDatabase(context).also { instance = it}
+        fun getDatabase(context: Context): ContactDatabase {
+            // if the INSTANCE is not null, then return it,
+            // if it is, then create the database
+            if (INSTANCE == null) {
+                synchronized(this) {
+                    // Pass the database to the INSTANCE
+                    INSTANCE = buildDatabase(context)
+                }
+            }
+            // Return database.
+            return INSTANCE!!
         }
 
-        private fun buildDatabase(context: Context) = Room
-            .databaseBuilder(context, ContactDatabase::class.java, "contacts.db")
-            .build()
+        private fun buildDatabase(context: Context): ContactDatabase {
+            return Room.databaseBuilder(
+                context.applicationContext,
+                ContactDatabase::class.java,
+                "contacts_database"
+            )
+                .build()
+        }
     }
 
 }

@@ -8,17 +8,17 @@ import com.isaac.x.models.ContactEntity
 interface ContactDao {
 
     @Query("SELECT * FROM contacts")
-    fun getAllContacts() : List<ContactEntity>
+    fun getAllContacts() : LiveData<List<ContactEntity>>
 
     @Query("SELECT * FROM contacts WHERE contact LIKE :contact")
     fun getContact(contact: String) : LiveData<ContactEntity>
 
     @Insert
-    fun insertContacts(contactEntity: ContactEntity)
+    suspend fun insertContacts(contactEntity: ContactEntity)
 
     @Update
-    fun updateContact(contactEntity: ContactEntity)
+    suspend fun updateContact(contactEntity: ContactEntity)
 
-    @Delete
-    fun deleteContact(contactEntity: ContactEntity)
+    @Query("DELETE FROM contacts WHERE contact = :contact")
+    fun deleteContact(contact: String)
 }

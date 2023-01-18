@@ -8,10 +8,15 @@ import android.os.Bundle
 import android.provider.CallLog
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.lifecycle.ViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.isaac.x.databinding.ActivityMainBinding
+import com.isaac.x.models.ContactEntity
+import com.isaac.x.viewmodels.ContactViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,9 +25,15 @@ class MainActivity : AppCompatActivity() {
 
     private val numbers = ArrayList<String>()
 
-    private lateinit var db : RoomDatabase
+    private val  contactsDb by lazy { ContactDatabase.getDatabase(this).contactDao() }
 
     private val mainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val viewModel: ContactViewModel by viewModels {
+        ContactViewModel.ContactViewModelFactory(
+            (application as ContactApplication).database.contactDao()
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,21 +41,16 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
-        initiateDB()
-
         setClickListeners()
-
-        for (num in numbers){
-
-            Log.e(TAG, "onCreate: $num", )
-            
-            //deleteCallLogByNumber(num)
-        }
+        
+        fetchContact()
 
     }
 
-    private fun initiateDB() {
-        db = Room.databaseBuilder(applicationContext, ContactDatabase::class.java, "contacts.db").build()
+    private fun fetchContact() {
+       viewModel.allContacts.observe(this){result ->
+           Log.e(TAG, "fetchContact: $result", )
+       }
     }
 
     private fun setClickListeners() {
@@ -54,25 +60,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun removeNumber() {
         if (mainBinding.edNumber.text.isNotEmpty()){
-            for (num in numbers){
-                if (mainBinding.edNumber.text.toString().equals(num)){
-                    numbers.remove(num)
+           val deleteContact = ContactEntity(contact = mainBinding.edNumber.text.toString())
 
-                    mainBinding.edNumber.text.clear()
-
-                    Log.e(TAG, "removeNumber: ${numbers.size}", )
-                }
+            GlobalScope.launch {
+                contactsDb.deleteContact(mainBinding.edNumber.text.toString())
+                Snackbar.make(mainBinding.root, "Contact Deleted!", Snackbar.LENGTH_SHORT).show()
             }
+            mainBinding.edNumber.text.clear()
         }
     }
 
     private fun addNumber() {
         if (mainBinding.edNumber.text.isNotEmpty()){
-            numbers.add(mainBinding.edNumber.text.toString())
-
+            val newContact =  ContactEntity(contact = mainBinding.edNumber.text.toString())
+            viewModel.addContact(newContact)
             mainBinding.edNumber.text.clear()
+            Snackbar.make(mainBinding.root, "Contact Added!", Snackbar.LENGTH_SHORT).show()
 
-            Log.e(TAG, "addNumber: ${numbers.size}", )
         }
     }
 

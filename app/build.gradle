@@ -39,6 +39,7 @@ android {
 dependencies {
     def room_version = "2.5.0"
     def lifecycle_version = "2.5.1"
+    def activity_version = "1.2.3"
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -58,5 +59,9 @@ dependencies {
 
     //viewmodel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1' // LifecycleScope
+
+    // Kotlin
+    implementation("androidx.activity:activity-ktx:$activity_version")
 
 }
