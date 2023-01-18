@@ -9,6 +9,8 @@ import android.provider.CallLog
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.isaac.x.databinding.ActivityMainBinding
 
 
@@ -18,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     private val numbers = ArrayList<String>()
 
+    private lateinit var db : RoomDatabase
+
     private val mainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(mainBinding.root)
 
         supportActionBar?.hide()
+
+        initiateDB()
 
         setClickListeners()
 
@@ -35,7 +41,10 @@ class MainActivity : AppCompatActivity() {
             //deleteCallLogByNumber(num)
         }
 
+    }
 
+    private fun initiateDB() {
+        db = Room.databaseBuilder(applicationContext, ContactDatabase::class.java, "contacts.db").build()
     }
 
     private fun setClickListeners() {
@@ -92,8 +101,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSIONS_REQUEST_READ_CONTACTS -> {
@@ -102,8 +110,10 @@ class MainActivity : AppCompatActivity() {
                     Log.i(TAG, "Permission has been denied by user")
                 } else {
                     Log.i(TAG, "Permission has been granted by user")
+                    
                     for (num in numbers){
                         deleteCallLogByNumber(num)
+
                     }
                 }
             }
