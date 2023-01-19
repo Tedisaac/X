@@ -22,35 +22,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <TextView
         android:id="@+id/btnAdd"
+        style="@android:style/Widget.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/btn_background"
+        android:background="@drawable/btn_background_light"
         android:text="@string/add"
         android:textColor="@color/white"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/btnRemove"
         app:layout_constraintStart_toStartOf="@+id/edNumber"
         app:layout_constraintTop_toBottomOf="@+id/edNumber" />
 
-    <Button
+    <TextView
         android:id="@+id/btnRemove"
+        style="@android:style/Widget.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:background="@drawable/btn_background"
+        android:background="@drawable/btn_background_light"
         android:text="@string/remove"
         android:textColor="@color/white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/btnAdd"
         app:layout_constraintEnd_toEndOf="@+id/edNumber"
         app:layout_constraintStart_toEndOf="@+id/btnAdd"
         app:layout_constraintTop_toTopOf="@+id/btnAdd" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="409dp"
-        android:layout_height="567dp"
+        android:id="@+id/rvContacts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

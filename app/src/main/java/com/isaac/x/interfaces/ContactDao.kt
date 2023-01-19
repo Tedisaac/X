@@ -20,5 +20,5 @@ interface ContactDao {
     suspend fun updateContact(contactEntity: ContactEntity)
 
     @Query("DELETE FROM contacts WHERE contact = :contact")
-    fun deleteContact(contact: String)
+    suspend fun deleteContact(contact: String)
 }
